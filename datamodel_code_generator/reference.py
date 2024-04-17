@@ -162,7 +162,7 @@ class Reference(_BaseModel):
     @property
     def override_path(self) -> Optional[Path]:
         if self.http_folder_output:
-            return Path(f'{self.http_folder_output.as_posix()}/{self.short_name}')
+            return Path(f'{self.http_folder_output.as_posix()}/{self.short_name.lower()}')
         return None
 
 

@@ -162,8 +162,19 @@ class Reference(_BaseModel):
     @property
     def override_path(self) -> Optional[Path]:
         if self.http_folder_output:
-            return Path(f'{self.http_folder_output.as_posix()}/{self.short_name.lower()}')
+            return Path(f'{self.http_folder_output.as_posix()}/{self._pascal_to_snake(self.short_name)}')
         return None
+
+    def _pascal_to_snake(self, pascal_string):
+        snake_string = ''
+        for char in pascal_string:
+            if char.isupper():
+                snake_string += '_' + char.lower()
+            else:
+                snake_string += char
+        if snake_string.startswith('_'):
+            snake_string = snake_string[1:]  # Remove leading underscore if present
+        return snake_string
 
 
 SINGULAR_NAME_SUFFIX: str = 'Item'

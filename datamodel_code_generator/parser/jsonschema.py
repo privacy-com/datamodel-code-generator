@@ -440,6 +440,7 @@ class JsonSchemaParser(Parser):
         custom_formatters: Optional[List[str]] = None,
         custom_formatters_kwargs: Optional[Dict[str, Any]] = None,
         use_pendulum: bool = False,
+        http_folder_output: Optional[Path] = None,
         http_query_parameters: Optional[Sequence[Tuple[str, str]]] = None,
         treat_dots_as_module: bool = False,
         use_exact_imports: bool = False,
@@ -510,6 +511,7 @@ class JsonSchemaParser(Parser):
             custom_formatters=custom_formatters,
             custom_formatters_kwargs=custom_formatters_kwargs,
             use_pendulum=use_pendulum,
+            http_folder_output=http_folder_output,
             http_query_parameters=http_query_parameters,
             treat_dots_as_module=treat_dots_as_module,
             use_exact_imports=use_exact_imports,
@@ -642,7 +644,9 @@ class JsonSchemaParser(Parser):
         return _get_data_type(obj.type, obj.format or 'default')
 
     def get_ref_data_type(self, ref: str) -> DataType:
-        reference = self.model_resolver.add_ref(ref)
+        reference = self.model_resolver.add_ref(
+            ref, http_folder_output=self.http_folder_output
+        )
         return self.data_type(reference=reference)
 
     def set_additional_properties(self, name: str, obj: JsonSchemaObject) -> None:
@@ -1491,6 +1495,7 @@ class JsonSchemaParser(Parser):
             singular_name=singular_name,
             singular_name_suffix='Enum',
             loaded=True,
+            http_folder_output=self.http_folder_output,
         )
 
         if not nullable:
@@ -1775,7 +1780,11 @@ class JsonSchemaParser(Parser):
             path = path_parts
         with self.model_resolver.current_root_context(path_parts):
             obj_name = self.model_resolver.add(
-                path, obj_name, unique=False, class_name=True
+                path,
+                obj_name,
+                unique=False,
+                class_name=True,
+                http_folder_output=self.http_folder_output,
             ).name
             with self.root_id_context(raw):
                 # Some jsonschema docs include attribute self to have include version details

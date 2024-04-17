@@ -157,6 +157,7 @@ class GraphQLParser(Parser):
         custom_formatters: Optional[List[str]] = None,
         custom_formatters_kwargs: Optional[Dict[str, Any]] = None,
         use_pendulum: bool = False,
+        http_folder_output: Optional[Path] = None,
         http_query_parameters: Optional[Sequence[Tuple[str, str]]] = None,
     ) -> None:
         super().__init__(
@@ -224,6 +225,7 @@ class GraphQLParser(Parser):
             custom_formatters=custom_formatters,
             custom_formatters_kwargs=custom_formatters_kwargs,
             use_pendulum=use_pendulum,
+            http_folder_output=http_folder_output,
             http_query_parameters=http_query_parameters,
         )
 

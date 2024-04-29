@@ -111,6 +111,8 @@ def main():
     args = parser.parse_args()
     main_config = load_config(args.config_path)
 
+    failed = False
+
     for source in main_config.sources:
         name = source.input.split('/')[-1].split('.')[0]
 
@@ -129,11 +131,11 @@ def main():
                 run_ruff(tmp.name)
 
                 if args.generate:
+                    create_module(cfg.output_module)  # type: ignore
                     with open(f'{cfg.output_module}/{name}.py', 'w') as file:
                         file.write(tmp.read().decode())
 
                 else:
-                    create_module(cfg.output_module)  # type: ignore
                     with open(f'{cfg.output_module}/{name}.py') as file:
                         current_module = file.read()
                         generated_module = tmp.read().decode()
@@ -141,7 +143,11 @@ def main():
 
         except Exception as e:
             logger.error(f'Error processing {source.input}: {e}')
+            failed = True
             continue
+
+    if failed:
+        quit(1)
 
 
 if __name__ == '__main__':

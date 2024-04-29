@@ -465,9 +465,7 @@ def generate(
         keep_model_order=keep_model_order,
         known_third_party=data_model_types.known_third_party,
         custom_formatters=custom_formatters,
-        http_folder_output=output
-        if isinstance(input_, ParseResult) and output.is_dir()
-        else None,
+        http_folder_output=output if output.is_dir() else None,
         custom_formatters_kwargs=custom_formatters_kwargs,
         use_pendulum=use_pendulum,
         http_query_parameters=http_query_parameters,

@@ -3,6 +3,7 @@ import difflib
 import logging
 import os
 import shlex
+import shutil
 import subprocess
 import tempfile
 from functools import cache
@@ -22,7 +23,7 @@ class BaseModelConfig(BaseModel):
     repo: str
     branch: str
     args: str
-    output_module: str
+    output_module_path: str
 
 
 class SourceConfig(BaseModelConfig):
@@ -30,7 +31,7 @@ class SourceConfig(BaseModelConfig):
     repo: Optional[str] = None
     branch: Optional[str] = None
     args: Optional[str] = None
-    output_module: Optional[str] = None
+    output_module_path: Optional[str] = None
 
 
 class LithicConfig(BaseModel):
@@ -50,6 +51,12 @@ def create_module(module_path: str):
         f.write('')
 
     logger.info(f'Created module {module_path}')
+
+
+def list_files(directory: str):
+    for root, _, files in os.walk(directory):
+        for file in files:
+            yield os.path.join(root, file)
 
 
 @cache
@@ -78,8 +85,14 @@ def load_config(file_path: str):
         return LithicConfig(**yaml.safe_load(file))
 
 
-def run_diff(text1: str, text2: str):
-    logger.info('Comparing generated schema with current schema')
+def run_diff(f1: str, f2: str):
+    with open(f1) as f:
+        text1 = f.read()
+
+    with open(f2) as f:
+        text2 = f.read()
+
+    logger.info(f'Comparing {f1} and {f2}')
     diff = difflib.unified_diff(
         text1.splitlines(),
         text2.splitlines(),
@@ -113,38 +126,81 @@ def main():
 
     failed = False
 
+    outputs = []
+
     for source in main_config.sources:
         name = source.input.split('/')[-1].split('.')[0]
-
         try:
-            with tempfile.NamedTemporaryFile() as tmp:
+            with tempfile.TemporaryDirectory(
+                suffix=f'-{name}', delete=False
+            ) as tmp_dir:
                 cfg = merge_config(main_config.default, source)
                 repo_path = run_clone_repo(cfg.repo, cfg.branch)
+                final_path = f'{tmp_dir}/{cfg.output_module_path}'
 
                 cmd_args = cast(List[str], shlex.split(cfg.args))  # type: ignore
                 cmd_args += ['--input', f'{repo_path}/{cfg.input}']
-                cmd_args += ['--output', tmp.name]
+                cmd_args += ['--output', final_path]
+
                 if '--custom-file-header' not in cmd_args:
                     cmd_args += ['--custom-file-header', '# lithic-schemagen']
 
+                create_module(final_path)
+                logger.info(f'Generating schema to {final_path}')
+
                 generate(cmd_args)
-                run_ruff(tmp.name)
-
-                if args.generate:
-                    create_module(cfg.output_module)  # type: ignore
-                    with open(f'{cfg.output_module}/{name}.py', 'w') as file:
-                        file.write(tmp.read().decode())
-
-                else:
-                    with open(f'{cfg.output_module}/{name}.py') as file:
-                        current_module = file.read()
-                        generated_module = tmp.read().decode()
-                        run_diff(current_module, generated_module)
+                run_ruff(tmp_dir)
+                outputs.append((source, final_path))
 
         except Exception as e:
             logger.error(f'Error processing {source.input}: {e}')
             failed = True
             continue
+
+    if args.generate:
+        module_paths = set()
+        for source, output_dir in outputs:
+            cfg = merge_config(main_config.default, source)
+            module_paths.add(cfg.output_module_path)
+
+        for path in module_paths:
+            logger.info(f'Deleting ./{path}')
+            shutil.rmtree(path, ignore_errors=True)
+
+        for source, output_dir in outputs:
+            cfg = merge_config(main_config.default, source)
+            logger.info(
+                f'Copying generated schema from {output_dir} to {cfg.output_module_path}'
+            )
+            shutil.copytree(output_dir, cfg.output_module_path, dirs_exist_ok=True)
+
+    else:
+        existing_files = set()
+
+        # collect all generated files to check for extra files
+        for source, output_dir in outputs:
+            cfg = merge_config(main_config.default, source)
+            existing_files.update(list_files(cfg.output_module_path))
+
+        for source, output_dir in outputs:
+            cfg = merge_config(main_config.default, source)
+            for full_path in list_files(output_dir):
+                try:
+                    fn = os.path.basename(full_path)
+
+                    run_diff(full_path, f'{cfg.output_module_path}/{fn}')
+                    try:
+                        existing_files.remove(f'{cfg.output_module_path}/{fn}')
+                    except:  # noqa: E722
+                        pass
+
+                except Exception as e:
+                    logger.error(e)
+                    failed = True
+
+        if existing_files:
+            logger.error(f'Extra files found: {existing_files}')
+            failed = True
 
     if failed:
         quit(1)

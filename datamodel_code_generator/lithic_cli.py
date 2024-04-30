@@ -202,8 +202,7 @@ def main():
             logger.error(f'Extra files found: {existing_files}')
             failed = True
 
-    if failed:
-        quit(1)
+    quit(int(failed))
 
 
 if __name__ == '__main__':

@@ -441,6 +441,7 @@ class JsonSchemaParser(Parser):
         use_pendulum: bool = False,
         http_folder_output: Optional[Path] = None,
         http_query_parameters: Optional[Sequence[Tuple[str, str]]] = None,
+        use_exact_imports: bool = False,
     ) -> None:
         super().__init__(
             source=source,
@@ -509,6 +510,7 @@ class JsonSchemaParser(Parser):
             use_pendulum=use_pendulum,
             http_folder_output=http_folder_output,
             http_query_parameters=http_query_parameters,
+            use_exact_imports=use_exact_imports,
         )
 
         self.remote_object_cache: DefaultPutDict[str, Dict[str, Any]] = DefaultPutDict()

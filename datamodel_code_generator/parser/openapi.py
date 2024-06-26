@@ -223,6 +223,7 @@ class OpenAPIParser(JsonSchemaParser):
         use_pendulum: bool = False,
         http_folder_output: Optional[Path] = None,
         http_query_parameters: Optional[Sequence[Tuple[str, str]]] = None,
+        treat_dots_as_module: bool = False,
         use_exact_imports: bool = False,
     ):
         super().__init__(
@@ -292,6 +293,7 @@ class OpenAPIParser(JsonSchemaParser):
             use_pendulum=use_pendulum,
             http_folder_output=http_folder_output,
             http_query_parameters=http_query_parameters,
+            treat_dots_as_module=treat_dots_as_module,
             use_exact_imports=use_exact_imports,
         )
         self.open_api_scopes: List[OpenAPIScope] = openapi_scopes or [

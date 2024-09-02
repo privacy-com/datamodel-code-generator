@@ -66,7 +66,7 @@ gitpython = "^3.1.43"
 ruff = ">=0.3.7,<1.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">6.0"
+pytest = ">6.1"
 pytest-benchmark = "*"
 pytest-cov = ">=2.12.1"
 pytest-mock = "*"

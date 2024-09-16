@@ -80,11 +80,7 @@ types-setuptools = ">=67.6.0.5,<70.0.0.0"
 pydantic = "*"
 httpx = ">=0.24.1"
 PySnooper = "*"
-<<<<<<< HEAD
-ruff = ">=0.0.290,<0.5.7"
-=======
 ruff = ">=0.3.7"
->>>>>>> 72e4606 (spike: schemagen)
 ruff-lsp = ">=0.0.39,<0.0.41"
 pre-commit = "*"
 pytest-xdist = "^3.3.1"

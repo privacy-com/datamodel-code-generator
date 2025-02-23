@@ -121,33 +121,6 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
-name = "cattrs"
-version = "24.1.2"
-description = "Composable complex class support for attrs and dataclasses."
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "cattrs-24.1.2-py3-none-any.whl", hash = "sha256:67c7495b760168d931a10233f979b28dc04daf853b30752246f4f8471c6d68d0"},
-    {file = "cattrs-24.1.2.tar.gz", hash = "sha256:8028cfe1ff5382df59dd36474a86e02d817b06eaf8af84555441bac915d2ef85"},
-]
-
-[package.dependencies]
-attrs = ">=23.1.0"
-exceptiongroup = {version = ">=1.1.1", markers = "python_version < \"3.11\""}
-typing-extensions = {version = ">=4.1.0,<4.6.3 || >4.6.3", markers = "python_version < \"3.11\""}
-
-[package.extras]
-bson = ["pymongo (>=4.4.0)"]
-cbor2 = ["cbor2 (>=5.4.6)"]
-msgpack = ["msgpack (>=1.0.5)"]
-msgspec = ["msgspec (>=0.18.5) ; implementation_name == \"cpython\""]
-orjson = ["orjson (>=3.9.2) ; implementation_name == \"cpython\""]
-pyyaml = ["pyyaml (>=6.0)"]
-tomlkit = ["tomlkit (>=0.11.8)"]
-ujson = ["ujson (>=5.7.0)"]
-
-[[package]]
 name = "certifi"
 version = "2025.1.31"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -949,22 +922,6 @@ files = [
 ]
 
 [[package]]
-name = "lsprotocol"
-version = "2023.0.1"
-description = "Python implementation of the Language Server Protocol."
-optional = false
-python-versions = ">=3.7"
-groups = ["dev"]
-files = [
-    {file = "lsprotocol-2023.0.1-py3-none-any.whl", hash = "sha256:c75223c9e4af2f24272b14c6375787438279369236cd568f596d4951052a60f2"},
-    {file = "lsprotocol-2023.0.1.tar.gz", hash = "sha256:cc5c15130d2403c18b734304339e51242d3018a05c4f7d0f198ad6e0cd21861d"},
-]
-
-[package.dependencies]
-attrs = ">=21.3.0"
-cattrs = "!=23.2.1"
-
-[[package]]
 name = "markupsafe"
 version = "2.1.5"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -1446,25 +1403,6 @@ files = [
 
 [package.dependencies]
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
-
-[[package]]
-name = "pygls"
-version = "1.3.1"
-description = "A pythonic generic language server (pronounced like 'pie glass')"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "pygls-1.3.1-py3-none-any.whl", hash = "sha256:6e00f11efc56321bdeb6eac04f6d86131f654c7d49124344a9ebb968da3dd91e"},
-    {file = "pygls-1.3.1.tar.gz", hash = "sha256:140edceefa0da0e9b3c533547c892a42a7d2fd9217ae848c330c53d266a55018"},
-]
-
-[package.dependencies]
-cattrs = ">=23.1.2"
-lsprotocol = "2023.0.1"
-
-[package.extras]
-ws = ["websockets (>=11.0.3)"]
 
 [[package]]
 name = "pysnooper"
@@ -1959,28 +1897,6 @@ files = [
 ]
 
 [[package]]
-name = "ruff-lsp"
-version = "0.0.40"
-description = "A Language Server Protocol implementation for Ruff."
-optional = false
-python-versions = ">=3.7"
-groups = ["dev"]
-files = [
-    {file = "ruff_lsp-0.0.40-py3-none-any.whl", hash = "sha256:8be548244252cef9ad5f6379fbe944d78ba24c09de28c390220d4a98168a6908"},
-    {file = "ruff_lsp-0.0.40.tar.gz", hash = "sha256:15e7b4a500a11cca34040348a689830ea5739dc2edb0ad51a05deec293bfacf7"},
-]
-
-[package.dependencies]
-lsprotocol = ">=2023.0.0a1"
-packaging = ">=23.1"
-pygls = ">=1.0.1"
-ruff = ">=0.0.274"
-typing-extensions = "*"
-
-[package.extras]
-dev = ["mypy (==1.4.1)", "pip-tools (>=6.13.0,<7.0.0)", "pytest (>=7.3.1,<8.0.0)", "pytest-asyncio (==0.21.1)", "python-lsp-jsonrpc (==1.0.0)"]
-
-[[package]]
 name = "setuptools"
 version = "75.8.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -2204,4 +2120,4 @@ validation = ["openapi-spec-validator", "prance"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.8"
-content-hash = "15105833c252a799eff0d3b3d882740b22e5f90a0e56fee05a039d09ca8bf127"
+content-hash = "02fdc2f3b16615ea3773d022c4e24a399102b71f2ad35832840b949a848c4839"

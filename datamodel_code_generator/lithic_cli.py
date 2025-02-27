@@ -71,7 +71,7 @@ def run_clone_repo(repo: str, branch: str):
 def run_ruff(file_path: str):
     logger.info(f'Running ruff on {file_path}')
     result = subprocess.run(
-        ['ruff', '--fix', file_path], capture_output=True, text=True
+        ['ruff', 'format', file_path], capture_output=True, text=True
     )
 
     if result.returncode != 0:

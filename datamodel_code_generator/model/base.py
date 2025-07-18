@@ -249,13 +249,20 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
         # This helps us find the actual project structure
         parts = file_path.parts[:-1]  # Exclude the filename
         
-        # Find the last occurrence of common output directories
-        output_dirs = ('generated', 'api', 'models', 'src', 'lib')
-        start_index = 0
+        # Find the LAST occurrence of common output directories to avoid double nesting
+        # We want to start AFTER the output directory, not from it
+        output_dirs = ('ledger_api_generated', 'generated', 'api', 'models', 'src', 'lib')
+        start_index = len(parts)  # Default to including no directory parts
         
-        for i, part in enumerate(parts):
-            if part in output_dirs:
-                start_index = i
+        # Look from the end backwards to find the last meaningful output directory
+        for i in range(len(parts) - 1, -1, -1):
+            if parts[i] in output_dirs:
+                # If this is an output directory that we're likely already outputting to,
+                # start AFTER it to avoid double nesting
+                if parts[i] in ('generated', 'ledger_api_generated'):
+                    start_index = i + 1  # Start after this directory
+                else:
+                    start_index = i  # Include this directory
                 break
         
         # Process only the meaningful parts starting from the found index

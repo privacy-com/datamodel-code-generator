@@ -244,16 +244,16 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
         # We need to preserve some directory structure for proper imports
         # but filter out temporary/system directories
         sanitized_parts = []
-        
+
         # Look for meaningful directory structure, starting from the end
         # This helps us find the actual project structure
         parts = file_path.parts[:-1]  # Exclude the filename
-        
+
         # Find the LAST occurrence of common output directories to avoid double nesting
         # We want to start AFTER the output directory, not from it
         output_dirs = ('ledger_api_generated', 'generated', 'api', 'models', 'src', 'lib')
         start_index = len(parts)  # Default to including no directory parts
-        
+
         # Look from the end backwards to find the last meaningful output directory
         for i in range(len(parts) - 1, -1, -1):
             if parts[i] in output_dirs:
@@ -264,7 +264,7 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
                 else:
                     start_index = i  # Include this directory
                 break
-        
+
         # Process only the meaningful parts starting from the found index
         for part in parts[start_index:]:
             # Replace hyphens and other invalid characters with underscores
@@ -277,10 +277,10 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
             # Only add non-empty valid parts
             if sanitized_part and sanitized_part.isidentifier():
                 sanitized_parts.append(sanitized_part)
-        
+
         # For the stem (filename without extension), also sanitize it
         sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=treat_dot_as_module)
-        
+
         return [
             *sanitized_parts,
             sanitized_stem,

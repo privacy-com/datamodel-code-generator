@@ -241,12 +241,25 @@ def sanitize_module_name(name: str, *, treat_dot_as_module: bool) -> str:
 
 def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: bool = False) -> list[str]:
     if file_path:
-        # For files, we only want the relative structure within the project, not absolute paths
-        # Skip all the temporary directory nonsense and just use the meaningful parts
+        # We need to preserve some directory structure for proper imports
+        # but filter out temporary/system directories
         sanitized_parts = []
-
-        # Process file path parts
-        for part in file_path.parts[:-1]:
+        
+        # Look for meaningful directory structure, starting from the end
+        # This helps us find the actual project structure
+        parts = file_path.parts[:-1]  # Exclude the filename
+        
+        # Find the last occurrence of common output directories
+        output_dirs = ('generated', 'api', 'models', 'src', 'lib')
+        start_index = 0
+        
+        for i, part in enumerate(parts):
+            if part in output_dirs:
+                start_index = i
+                break
+        
+        # Process only the meaningful parts starting from the found index
+        for part in parts[start_index:]:
             # Replace hyphens and other invalid characters with underscores
             sanitized_part = re.sub(r'[^0-9a-zA-Z_]', '_', part)
             # Remove leading dots or invalid characters
@@ -257,19 +270,16 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
             # Only add non-empty valid parts
             if sanitized_part and sanitized_part.isidentifier():
                 sanitized_parts.append(sanitized_part)
-
+        
         # For the stem (filename without extension), also sanitize it
         sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=treat_dot_as_module)
-
-        # Only include the stem, not the directory structure for most cases
-        # This prevents the double nesting issue
+        
         return [
+            *sanitized_parts,
             sanitized_stem,
             *name.split(".")[:-1],
         ]
     return name.split(".")[:-1]
-
-
 def get_module_name(name: str, file_path: Optional[Path]) -> str:
     # Convert Optional[Path] to Path | None for compatibility
     path_arg = file_path if file_path is not None else None

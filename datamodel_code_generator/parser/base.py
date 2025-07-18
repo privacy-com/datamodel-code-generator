@@ -747,7 +747,13 @@ class Parser(ABC):
                         rel_path_depth = model.module_path[-1].count('.')
                         from_ = from_[rel_path_depth:]
 
-                alias = scoped_model_resolver.add(full_path, import_).name
+                folder_output = model.reference.http_folder_output.replace('-', '_') if model.reference.http_folder_output else None
+
+                alias = scoped_model_resolver.add(
+                    full_path,
+                    import_,
+                    http_folder_output=folder_output
+                ).name
 
                 name = data_type.reference.short_name
                 if from_ and import_ and alias != name:

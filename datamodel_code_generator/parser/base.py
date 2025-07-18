@@ -737,6 +737,8 @@ class Parser(ABC):
                         rel_path_depth = model.module_path[-1].count('.')
                         from_ = from_[rel_path_depth:]
 
+                    import_ = import_.replace('-', '_')
+
                 alias = scoped_model_resolver.add(
                     full_path,
                     import_,

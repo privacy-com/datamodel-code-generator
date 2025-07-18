@@ -162,7 +162,8 @@ class Reference(_BaseModel):
     @property
     def override_path(self) -> Optional[Path]:
         if self.http_folder_output:
-            return Path(f'{self.http_folder_output.as_posix()}/{self._pascal_to_snake(self.short_name)}')
+            replaced_posix = self.http_folder_output.as_posix().replace('-', '_')
+            return Path(f'{replaced_posix}/{self._pascal_to_snake(self.short_name)}')
         return None
 
     def _pascal_to_snake(self, pascal_string):

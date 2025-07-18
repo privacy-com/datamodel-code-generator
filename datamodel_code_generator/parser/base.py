@@ -730,6 +730,8 @@ class Parser(ABC):
                             from_, import_, data_type.reference.short_name
                         )
                     import_ = import_.replace('-', '_')
+                    # Also sanitize the from_ path to replace hyphens and invalid characters
+                    from_ = from_.replace('-', '_')
                     if (
                         len(model.module_path) > 1
                         and model.module_path[-1].count('.') > 0
@@ -738,14 +740,8 @@ class Parser(ABC):
                         rel_path_depth = model.module_path[-1].count('.')
                         from_ = from_[rel_path_depth:]
 
-                    import_ = import_.replace('-', '_')
-                    if (
-                        len(model.module_path) > 1
-                        and model.module_path[-1].count('.') > 0
-                        and not self.treat_dots_as_module
-                    ):
-                        rel_path_depth = model.module_path[-1].count('.')
-                        from_ = from_[rel_path_depth:]
+                    # Update full_path with sanitized values
+                    full_path = from_, import_
 
                 alias = scoped_model_resolver.add(
                     full_path,

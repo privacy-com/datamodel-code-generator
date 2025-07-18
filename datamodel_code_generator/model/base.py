@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
+import re
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -231,15 +232,43 @@ def get_template(template_file_path: Path) -> Template:
     environment: Environment = Environment(loader=loader)
     return environment.get_template(template_file_path.name)
 
+def sanitize_module_name(name: str, *, treat_dot_as_module: bool) -> str:
+    pattern = r"[^0-9a-zA-Z_.]" if treat_dot_as_module else r"[^0-9a-zA-Z_]"
+    sanitized = re.sub(pattern, "_", name)
+    if sanitized and sanitized[0].isdigit():
+        sanitized = f"_{sanitized}"
+    return sanitized
 
 def get_module_path(name: str, file_path: Optional[Path]) -> List[str]:
     if file_path:
+        # Sanitize all path components to be valid Python module identifiers
+        sanitized_parts = []
+        for part in file_path.parts[:-1]:
+            # Skip common temporary directory prefixes to avoid very long module names
+            if part.lower() in ('tmp', 'temp', 'private', 'var') and len(sanitized_parts) == 0:
+                continue
+            # Skip system folder patterns
+            if part.startswith('folders') or part.startswith('tmp') and len(part) > 10:
+                continue
+
+            # Replace hyphens and other invalid characters with underscores
+            sanitized_part = re.sub(r'[^0-9a-zA-Z_]', '_', part)
+            # Remove leading dots or invalid characters
+            sanitized_part = sanitized_part.lstrip('._')
+            # Ensure it starts with a letter or underscore, not a digit
+            if sanitized_part and sanitized_part[0].isdigit():
+                sanitized_part = f"_{sanitized_part}"
+            # Only add non-empty valid parts
+            if sanitized_part and sanitized_part.isidentifier():
+                sanitized_parts.append(sanitized_part)
+
+        sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=False)
         return [
-            *file_path.parts[:-1],
-            file_path.stem,
-            *name.split('.')[:-1],
+            *sanitized_parts,
+            sanitized_stem,
+            *name.split(".")[:-1],
         ]
-    return name.split('.')[:-1]
+    return name.split(".")[:-1]
 
 
 def get_module_name(name: str, file_path: Optional[Path]) -> str:

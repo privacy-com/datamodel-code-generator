@@ -671,6 +671,7 @@ class Parser(ABC):
             class_name: str = model.class_name
             generated_name: str = scoped_model_resolver.add(
                 [model.path],
+                class_name,
                 unique=True,
                 class_name=True,
                 http_folder_output=model.reference.http_folder_output,

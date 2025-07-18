@@ -108,8 +108,8 @@ def run_diff(f1: str, f2: str):
 
 
 def merge_config(default_config: BaseModelConfig, source_config: SourceConfig):
-    merged_config = default_config.dict()
-    source_config_dict = source_config.dict(exclude_unset=True)
+    merged_config = default_config.model_dump()
+    source_config_dict = source_config.model_dump(exclude_unset=True)
     for key, value in source_config_dict.items():
         if value is not None:
             merged_config[key] = value

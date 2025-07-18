@@ -234,8 +234,40 @@ def get_template(template_file_path: Path) -> Template:
 
 def get_module_path(name: str, file_path: Optional[Path]) -> List[str]:
     if file_path:
+        # Filter out temporary directory paths and only use meaningful module components
+        parts = list(file_path.parts[:-1])  # Exclude the filename
+
+        # Find the last occurrence of common output directories to use as the base
+        output_dirs = ['generated', 'models', 'api', 'schemas']
+        start_index = -1
+
+        for i, part in enumerate(parts):
+            if part in output_dirs:
+                start_index = i
+
+        # If we found an output directory, only use parts from that point
+        if start_index >= 0:
+            meaningful_parts = parts[start_index:]
+            # If the parts start with an output dir that's our target, use relative path from there
+            if meaningful_parts and meaningful_parts[0] in output_dirs:
+                # Use only the subdirectories within the output directory, not the output dir itself
+                meaningful_parts = meaningful_parts[1:] if len(meaningful_parts) > 1 else []
+        else:
+            # Filter out known temporary directory patterns
+            filtered_parts = []
+            for part in parts:
+                # Skip temp directory components
+                if (part.startswith('tmp') or
+                    part.startswith('T') or
+                    part in ['private', 'var', 'folders'] or
+                    part.startswith('_') or
+                    len(part) > 20):  # Very long random-looking names
+                    continue
+                filtered_parts.append(part)
+            meaningful_parts = filtered_parts
+
         return [
-            *file_path.parts[:-1],
+            *meaningful_parts,
             file_path.stem,
             *name.split('.')[:-1],
         ]

@@ -403,6 +403,7 @@ class Parser(ABC):
         treat_dots_as_module: bool = False,
         use_exact_imports: bool = False,
         default_field_extras: Optional[Dict[str, Any]] = None,
+        http_folder_output: Optional[Path] = None,
     ) -> None:
         self.data_type_manager: DataTypeManager = data_type_manager_type(
             python_version=target_python_version,
@@ -528,7 +529,7 @@ class Parser(ABC):
         self.custom_formatters_kwargs = custom_formatters_kwargs
         self.treat_dots_as_module = treat_dots_as_module
         self.default_field_extras: Optional[Dict[str, Any]] = default_field_extras
-        # self.http_folder_output = http_folder_output
+        self.http_folder_output = http_folder_output
 
     @property
     def iter_source(self) -> Iterator[Source]:

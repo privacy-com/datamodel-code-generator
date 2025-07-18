@@ -241,33 +241,29 @@ def sanitize_module_name(name: str, *, treat_dot_as_module: bool) -> str:
 
 def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: bool = False) -> list[str]:
     if file_path:
-        # Sanitize all path components to be valid Python module identifiers
+        # For files, we only want the relative structure within the project, not absolute paths
+        # Skip all the temporary directory nonsense and just use the meaningful parts
         sanitized_parts = []
-        found_meaningful_path = False
-        
+
+        # Process file path parts
         for part in file_path.parts[:-1]:
-            # Check if this looks like a meaningful project directory
-            if part in ('ledger_api_generated', 'generated', 'api', 'models', 'src', 'lib', 'app'):
-                found_meaningful_path = True
-            
-            # Skip everything until we find a meaningful path component
-            if not found_meaningful_path:
-                continue
-                
             # Replace hyphens and other invalid characters with underscores
             sanitized_part = re.sub(r'[^0-9a-zA-Z_]', '_', part)
             # Remove leading dots or invalid characters
-            sanitized_part = sanitized_part.lstrip('._')
+            sanitized_part = sanitized_part.lstrip('._/')
             # Ensure it starts with a letter or underscore, not a digit
             if sanitized_part and sanitized_part[0].isdigit():
                 sanitized_part = f"_{sanitized_part}"
-            # Only add non-empty valid parts that are reasonable length
-            if sanitized_part and sanitized_part.isidentifier() and len(sanitized_part) <= 50:
+            # Only add non-empty valid parts
+            if sanitized_part and sanitized_part.isidentifier():
                 sanitized_parts.append(sanitized_part)
-        
+
+        # For the stem (filename without extension), also sanitize it
         sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=treat_dot_as_module)
+
+        # Only include the stem, not the directory structure for most cases
+        # This prevents the double nesting issue
         return [
-            *sanitized_parts,
             sanitized_stem,
             *name.split(".")[:-1],
         ]

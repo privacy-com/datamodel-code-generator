@@ -241,9 +241,33 @@ def sanitize_module_name(name: str, *, treat_dot_as_module: bool) -> str:
 
 def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: bool = False) -> list[str]:
     if file_path:
+        # Sanitize all path components to be valid Python module identifiers
+        sanitized_parts = []
+        found_meaningful_path = False
+        
+        for part in file_path.parts[:-1]:
+            # Check if this looks like a meaningful project directory
+            if part in ('ledger_api_generated', 'generated', 'api', 'models', 'src', 'lib', 'app'):
+                found_meaningful_path = True
+            
+            # Skip everything until we find a meaningful path component
+            if not found_meaningful_path:
+                continue
+                
+            # Replace hyphens and other invalid characters with underscores
+            sanitized_part = re.sub(r'[^0-9a-zA-Z_]', '_', part)
+            # Remove leading dots or invalid characters
+            sanitized_part = sanitized_part.lstrip('._')
+            # Ensure it starts with a letter or underscore, not a digit
+            if sanitized_part and sanitized_part[0].isdigit():
+                sanitized_part = f"_{sanitized_part}"
+            # Only add non-empty valid parts that are reasonable length
+            if sanitized_part and sanitized_part.isidentifier() and len(sanitized_part) <= 50:
+                sanitized_parts.append(sanitized_part)
+        
         sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=treat_dot_as_module)
         return [
-            *file_path.parts[:-1],
+            *sanitized_parts,
             sanitized_stem,
             *name.split(".")[:-1],
         ]
@@ -251,7 +275,9 @@ def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: b
 
 
 def get_module_name(name: str, file_path: Optional[Path]) -> str:
-    return '.'.join(get_module_path(name, file_path))
+    # Convert Optional[Path] to Path | None for compatibility
+    path_arg = file_path if file_path is not None else None
+    return '.'.join(get_module_path(name, path_arg))
 
 
 class TemplateBase(ABC):

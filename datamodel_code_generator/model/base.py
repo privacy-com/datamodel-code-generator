@@ -239,32 +239,11 @@ def sanitize_module_name(name: str, *, treat_dot_as_module: bool) -> str:
         sanitized = f"_{sanitized}"
     return sanitized
 
-def get_module_path(name: str, file_path: Optional[Path]) -> List[str]:
+def get_module_path(name: str, file_path: Path | None, *, treat_dot_as_module: bool = False) -> list[str]:
     if file_path:
-        # Sanitize all path components to be valid Python module identifiers
-        sanitized_parts = []
-        for part in file_path.parts[:-1]:
-            # Skip common temporary directory prefixes to avoid very long module names
-            if part.lower() in ('tmp', 'temp', 'private', 'var') and len(sanitized_parts) == 0:
-                continue
-            # Skip system folder patterns
-            if part.startswith('folders') or part.startswith('tmp') and len(part) > 10:
-                continue
-
-            # Replace hyphens and other invalid characters with underscores
-            sanitized_part = re.sub(r'[^0-9a-zA-Z_]', '_', part)
-            # Remove leading dots or invalid characters
-            sanitized_part = sanitized_part.lstrip('._')
-            # Ensure it starts with a letter or underscore, not a digit
-            if sanitized_part and sanitized_part[0].isdigit():
-                sanitized_part = f"_{sanitized_part}"
-            # Only add non-empty valid parts
-            if sanitized_part and sanitized_part.isidentifier():
-                sanitized_parts.append(sanitized_part)
-
-        sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=False)
+        sanitized_stem = sanitize_module_name(file_path.stem, treat_dot_as_module=treat_dot_as_module)
         return [
-            *sanitized_parts,
+            *file_path.parts[:-1],
             sanitized_stem,
             *name.split(".")[:-1],
         ]

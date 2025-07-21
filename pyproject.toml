@@ -1,14 +1,18 @@
-[tool.poetry]
+[build-system]
+build-backend = "hatchling.build"
+requires = [
+  "hatch-vcs>=0.4",
+  "hatchling>=1.25",
+]
+
+[project]
 name = "datamodel-code-generator"
-version = "0.0.0"
 description = "Datamodel Code Generator"
-authors = ["Koudai Aono <koxudaxi@gmail.com>"]
-readme = "README.md"
+readme.content-type = "text/markdown"
+readme.file = "README.md"
 license = "MIT"
-homepage = "https://github.com/koxudaxi/datamodel-code-generator"
-repository = "https://github.com/koxudaxi/datamodel-code-generator"
-
-
+authors = [ { name = "Koudai Aono", email = "koxudaxi@gmail.com" } ]
+requires-python = ">=3.9"
 classifiers = [
         "Development Status :: 4 - Beta",
         "Natural Language :: English",
@@ -38,7 +42,6 @@ patterns = ["(^version: str = ')[^']*(')"]
 
 [tool.poetry.scripts]
 datamodel-codegen = "datamodel_code_generator.__main__:main"
-lithic-schemagen = "datamodel_code_generator.lithic_cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -62,8 +65,6 @@ PySnooper = { version = ">=0.4.1,<2.0.0", optional = true }
 httpx = { version = "*", optional = true }
 pyyaml = ">=6.0.1"
 graphql-core = {version = "^3.2.3", optional = true}
-gitpython = "^3.1.43"
-ruff = ">=0.3.7,<1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">6.1"
@@ -80,7 +81,8 @@ types-setuptools = ">=67.6.0.5,<70.0.0.0"
 pydantic = "*"
 httpx = ">=0.24.1"
 PySnooper = "*"
-ruff = ">=0.3.7,<1.0.0"
+ruff = ">=0.0.290,<0.5.7"
+ruff-lsp = ">=0.0.39,<0.0.41"
 pre-commit = "*"
 pytest-xdist = "^3.3.1"
 prance = "*"
@@ -95,71 +97,105 @@ debug = ["PySnooper"]
 validation = ["prance", "openapi-spec-validator"]
 
 [tool.ruff]
-line-length = 88
-extend-select = ['Q', 'RUF100', 'C4', 'UP', 'I']
-flake8-quotes = {inline-quotes = 'single', multiline-quotes = 'double'}
-target-version = 'py37'
-ignore = ['E501', 'UP006', 'UP007', 'Q000', 'Q003' ]
-extend-exclude = ['tests/data']
+line-length = 120
+extend-exclude = [ "tests/data" ]
+format.preview = true
+format.docstring-code-format = true
+lint.select = [
+  "ALL",
+]
+lint.ignore = [
+  "ANN401", # Any as type annotation is allowed
+  "C901",   # complex structure
+  "COM812", # Conflict with formatter
+  "CPY",    # No copyright statements
+  "D",      # limited documentation
+  "DOC",    # limited documentation
+  "FIX002", # line contains to do
+  "ISC001", # Conflict with formatter
+  "S101",   # can use assert
+  "TD002",  # missing to do author
+  "TD003",  # missing to do link
+  "TD004",  # missing colon in to do
+]
+lint.per-file-ignores."tests/**/*.py" = [
+  "FBT",     # don't care about booleans as positional arguments in tests
+  "INP001",  # no implicit namespace
+  "PLC2701", # private import is fine
+  "PLR0913", # as many arguments as want
+  "PLR0915", # can have longer test methods
+  "PLR0917", # as many arguments as want
+  "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
+  "S",       # no safety concerns
+  "SLF001",  # can test private methods
+]
+lint.isort = { known-first-party = [
+  "datamodel_code_generator",
+  "tests",
+], required-imports = [
+  "from __future__ import annotations",
+] }
 
-[tool.ruff.format]
-quote-style = "single"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
+lint.preview = true
 
-[tool.mypy]
-plugins = "pydantic.mypy"
-
-ignore_missing_imports = true
-follow_imports = "silent"
-strict_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_any_generics = true
-check_untyped_defs = true
-no_implicit_reexport = true
-disallow_untyped_defs = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = false
-warn_untyped_fields = true
+[tool.codespell]
+skip = '.git,*.lock,tests'
 
 [tool.pytest.ini_options]
-filterwarnings = "ignore::DeprecationWarning:distutils"
+filterwarnings = [
+  "error",
+  "ignore:^.*The `parse_obj` method is deprecated; use `model_validate` instead.*",
+  "ignore:^.*The `__fields_set__` attribute is deprecated, use `model_fields_set` instead.*",
+  "ignore:^.*The `dict` method is deprecated; use `model_dump` instead.*",
+  "ignore:^.*The `copy` method is deprecated; use `model_copy` instead.*",
+  "ignore:^.*`--validation` option is deprecated.*",
+  "ignore:^.*Field name `name` is duplicated on Pet.*",
+  "ignore:^.*format of 'unknown-type' not understood for 'string' - using default.*",
+  "ignore:^.*unclosed file.*",
+  "ignore:^.*black doesn't support `experimental-string-processing` option for wrapping string literal in .*",
+  "ignore:^.*jsonschema.exceptions.RefResolutionError is deprecated as of version 4.18.0. If you wish to catch potential reference resolution errors, directly catch referencing.exceptions.Unresolvable..*",
+  "ignore:^.*`experimental string processing` has been included in `preview` and deprecated. Use `preview` instead..*",
+]
 norecursedirs = "tests/data/*"
+verbosity_assertions = 2
 
-[tool.coverage.run]
-source = ["datamodel_code_generator"]
-branch = true
-omit = ["scripts/*"]
+[tool.coverage]
+html.skip_covered = false
+html.show_contexts = false
+paths.source = [
+  "src",
+  ".tox*/*/lib/python*/site-packages",
+  ".tox*\\*\\Lib\\site-packages",
+  "*/src",
+  "*\\src",
+]
+paths.other = [
+  ".",
+  "*/datamodel-code-generator",
+  "*\\datamodel-code-generator",
+]
+run.dynamic_context = "none"
+run.omit = [ "tests/data/*" ]
+report.fail_under = 88
+run.parallel = true
+run.plugins = [
+  "covdefaults",
+]
+covdefaults.subtract_omit = "*/__main__.py"
 
-
-[tool.coverage.report]
-ignore_errors = true
-exclude_lines = [
-    "if self.debug:",
-    "pragma: no cover",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "if not TYPE_CHECKING:"]
-
-omit = ["tests/*"]
-
+[tool.pyright]
+reportPrivateImportUsage = false
 
 [tool.pydantic-pycharm-plugin]
 ignore-init-method-arguments = true
+parsable-types.str = [ "int", "float" ]
 
-[tool.pydantic-pycharm-plugin.parsable-types]
-# str field may parse int and float
-str = ["int", "float"]
-
-[tool.codespell]
-# Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = '.git,*.lock,tests'
-# check-hidden = true
-# ignore-regex = ''
-# ignore-words-list = ''
+[tool.uv]
+conflicts = [
+  [
+    { group = "black24" },
+    { group = "black22" },
+    { group = "black23" },
+    { group = "dev" },
+  ],
+]

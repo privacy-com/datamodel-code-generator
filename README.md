@@ -286,6 +286,8 @@ See the following linked projects for real world examples and inspiration.
   - *[`Makefile`](https://github.com/argoproj-labs/hera/blob/c8cbf0c7a676de57469ca3d6aeacde7a5e84f8b7/Makefile#L53-L62)*
 - [awslabs/aws-lambda-powertools-python](https://github.com/awslabs/aws-lambda-powertools-python)
   - *Recommended for [advanced-use-cases](https://awslabs.github.io/aws-lambda-powertools-python/2.6.0/utilities/parser/#advanced-use-cases) in the official documentation*
+- [cloudcoil/cloudcoil](https://github.com/cloudcoil/cloudcoil)
+  - *[Cloudcoil - Model generation](https://github.com/cloudcoil/cloudcoil#%EF%B8%8F-model-generation)
 - [DataDog/integrations-core](https://github.com/DataDog/integrations-core)
   - *[Config models](https://github.com/DataDog/integrations-core/blob/master/docs/developer/meta/config-models.md)*
 - [hashintel/hash](https://github.com/hashintel/hash)
@@ -354,6 +356,8 @@ Options:
                         "datetime.date,datetime.datetime"
   --custom-formatters CUSTOM_FORMATTERS
                         List of modules with custom formatter (delimited list input).
+  --formatters {black,isort,ruff-check,ruff-format} [{black,isort,ruff-check,ruff-format} ...]
+                        Formatters for output (default: [black, isort])
   --http-headers HTTP_HEADER [HTTP_HEADER ...]
                         Set headers in HTTP requests to the remote host. (example:
                         "Authorization: Basic dXNlcjpwYXNz")
@@ -413,6 +417,8 @@ Field customization:
   --field-include-all-keys
                         Add all keys to field parameters
   --force-optional      Force optional for required fields
+  --no-alias            Do not add a field alias. E.g., if --snake-case-field is used along
+                        with a base class, which has an alias_generator
   --original-field-name-delimiter ORIGINAL_FIELD_NAME_DELIMITER
                         Set delimiter to convert to snake case. This option only can be used
                         with --snake-case-field (default: `_` )
@@ -433,8 +439,8 @@ Field customization:
                         Use schema description to populate field docstring
 
 Model customization:
-  --allow-extra-fields  Allow to pass extra fields, if this flag is not passed, extra fields
-                        are forbidden.
+  --allow-extra-fields  Deprecated: Allow passing extra fields. This flag is deprecated. Use
+                        `--extra-fields=allow` instead.
   --allow-population-by-field-name
                         Allow population by field name
   --class-name CLASS_NAME
@@ -449,11 +455,23 @@ Model customization:
                         Enable faux immutability
   --enable-version-header
                         Enable package version on file headers
+  --extra-fields {allow,ignore,forbid}
+                        Set the generated models to allow, forbid, or ignore extra fields.
+  --frozen-dataclasses  Generate frozen dataclasses (dataclass(frozen=True)). Only applies
+                        to dataclass output.
   --keep-model-order    Keep generated models'' order
+  --keyword-only        Defined models as keyword only (for example
+                        dataclass(kw_only=True)).
+  --output-datetime-class {datetime,AwareDatetime,NaiveDatetime}
+                        Choose Datetime class between AwareDatetime, NaiveDatetime or
+                        datetime. Each output model has its default mapping (for example
+                        pydantic: datetime, dataclass: str, ...)
+  --parent-scoped-naming
+                        Set name of models defined inline from the parent model
   --reuse-model         Reuse models on the field when a module has the model with the same
                         content
-  --target-python-version {3.6,3.7,3.8,3.9,3.10,3.11,3.12}
-                        target python version (default: 3.8)
+  --target-python-version {3.9,3.10,3.11,3.12,3.13}
+                        target python version
   --treat-dot-as-module
                         treat dotted module names as modules
   --use-exact-imports   import exact types instead of modules, for example: "from .foo

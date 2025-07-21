@@ -1,19 +1,30 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.6.4'
-    hooks:
-      - id: ruff
-        files: "^datamodel_code_generator|^tests"
-        exclude: "^tests/data"
-        args: [ --fix ]
-      - id: ruff-format
-        files: "^datamodel_code_generator|^tests"
-        exclude: "^tests/data"
-  - repo: https://github.com/codespell-project/codespell
-    # Configuration for codespell is in pyproject.toml
-    rev: v2.3.0
-    hooks:
-    - id: codespell
-      additional_dependencies:
-        - tomli
-      exclude: "^tests/|^CODE_OF_CONDUCT.md"
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.33.2
+  hooks:
+    - id: check-github-workflows
+      args: [ "--verbose" ]
+- repo: https://github.com/tox-dev/tox-ini-fmt
+  rev: "1.5.0"
+  hooks:
+    - id: tox-ini-fmt
+      args: ["-p", "fix"]
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: v2.6.0
+  hooks:
+    - id: pyproject-fmt
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: 'v0.12.3'
+  hooks:
+  - id: ruff-format
+    exclude: "^tests/data"
+  - id: ruff
+    exclude: "^tests/data"
+    args: ["--fix", "--unsafe-fixes", "--exit-non-zero-on-fix"]
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.4.1
+  hooks:
+  - id: codespell
+    additional_dependencies:
+    - tomli
+    exclude: "^tests/|^CODE_OF_CONDUCT.md"

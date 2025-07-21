@@ -146,29 +146,10 @@ filterwarnings = [
 norecursedirs = "tests/data/*"
 verbosity_assertions = 2
 
-[tool.coverage]
-html.skip_covered = false
-html.show_contexts = false
-paths.source = [
-  "src",
-  ".tox*/*/lib/python*/site-packages",
-  ".tox*\\*\\Lib\\site-packages",
-  "*/src",
-  "*\\src",
-]
-paths.other = [
-  ".",
-  "*/datamodel-code-generator",
-  "*\\datamodel-code-generator",
-]
-run.dynamic_context = "none"
-run.omit = [ "tests/data/*" ]
-report.fail_under = 88
-run.parallel = true
-run.plugins = [
-  "covdefaults",
-]
-covdefaults.subtract_omit = "*/__main__.py"
+[tool.coverage.run]
+source = ["datamodel_code_generator"]
+branch = true
+omit = ["scripts/*"]
 
 [tool.coverage.report]
 ignore_errors = true

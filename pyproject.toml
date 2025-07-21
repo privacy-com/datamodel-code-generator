@@ -168,7 +168,6 @@ reportPrivateImportUsage = false
 
 [tool.pydantic-pycharm-plugin]
 ignore-init-method-arguments = true
-parsable-types.str = [ "int", "float" ]
 
 [tool.pydantic-pycharm-plugin.parsable-types]
 # str field may parse int and float

@@ -346,6 +346,16 @@ class DataType(_BaseModel):
         module_name = self.module_name
         if module_name:
             return f'{module_name}.{self.reference.short_name}'  # type: ignore
+
+        # For external references without a proper source, use the original filename
+        # instead of the class name to construct the module path
+        if (self.reference and
+            hasattr(self.reference, 'original_name') and
+            self.reference.original_name and
+            self.reference.original_name != self.reference.name):
+            # This is likely an external reference where original_name is the filename
+            return f'{self.reference.original_name}.{self.reference.short_name}'
+
         return self.reference.short_name  # type: ignore
 
     @property

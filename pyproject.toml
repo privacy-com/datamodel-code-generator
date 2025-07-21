@@ -38,6 +38,7 @@ patterns = ["(^version: str = ')[^']*(')"]
 
 [tool.poetry.scripts]
 datamodel-codegen = "datamodel_code_generator.__main__:main"
+lithic-schemagen = "datamodel_code_generator.lithic_cli:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"

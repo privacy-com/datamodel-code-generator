@@ -188,7 +188,10 @@ def main():
                 try:
                     fn = os.path.basename(full_path)
 
-                    run_diff(full_path, f'{cfg.output_module_path}/{fn}')
+                    # Skip __init__.py files
+                    if not fn.endswith('__init__.py'):
+                        run_diff(full_path, f'{cfg.output_module_path}/{fn}')
+
                     try:
                         existing_files.remove(f'{cfg.output_module_path}/{fn}')
                     except:  # noqa: E722

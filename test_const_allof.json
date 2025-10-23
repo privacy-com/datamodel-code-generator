@@ -1,0 +1,30 @@
+{
+  "components": {
+    "schemas": {
+      "BaseTransaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "ManagementOperationTransaction": {
+        "allOf": [
+          {"$ref": "#/components/schemas/BaseTransaction"},
+          {
+            "type": "object",
+            "properties": {
+              "family": {
+                "type": "string",
+                "const": "MANAGEMENT_OPERATION",
+                "description": "MANAGEMENT_OPERATION - Management Operation Transaction"
+              }
+            }
+          }
+        ],
+        "required": ["family"]
+      }
+    }
+  }
+}

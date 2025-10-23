@@ -1,0 +1,13 @@
+# lithic-schemagen
+
+from __future__ import annotations
+
+from enum import Enum
+
+
+class ManagementOperationCategory(Enum):
+    MANAGEMENT_FEE = 'MANAGEMENT_FEE'
+    MANAGEMENT_DISPUTE = 'MANAGEMENT_DISPUTE'
+    MANAGEMENT_REWARD = 'MANAGEMENT_REWARD'
+    MANAGEMENT_ADJUSTMENT = 'MANAGEMENT_ADJUSTMENT'
+    MANAGEMENT_DISBURSEMENT = 'MANAGEMENT_DISBURSEMENT'

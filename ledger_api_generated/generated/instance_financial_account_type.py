@@ -1,0 +1,17 @@
+# lithic-schemagen
+
+from __future__ import annotations
+
+from enum import Enum
+
+
+class InstanceFinancialAccountType(Enum):
+    ISSUING = 'ISSUING'
+    RESERVE = 'RESERVE'
+    OPERATING = 'OPERATING'
+    CHARGED_OFF_FEES = 'CHARGED_OFF_FEES'
+    CHARGED_OFF_INTEREST = 'CHARGED_OFF_INTEREST'
+    CHARGED_OFF_PRINCIPAL = 'CHARGED_OFF_PRINCIPAL'
+    SECURITY = 'SECURITY'
+    PROGRAM_RECEIVABLES = 'PROGRAM_RECEIVABLES'
+    COLLECTION = 'COLLECTION'

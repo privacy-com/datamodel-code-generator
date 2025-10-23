@@ -1,0 +1,52 @@
+default:
+  repo: privacy-com/lithic-schemas
+  branch: john-open-api-2
+  output_module_path: "ledger_api_generated/generated"
+  args: >
+    --input-file-type jsonschema
+    --collapse-root-models
+    --use-title-as-name
+    --reuse-model
+    --use-pendulum
+    --base-class ledger_api_generated.common.BaseResponse
+
+sources:
+  - input: jsonschema/customer-facing/treasury/ledger/base/extended_credit.json
+  - input: jsonschema/customer-facing/treasury/ledger/requests/external_payment_action_request.json
+  - input: jsonschema/customer-facing/treasury/ledger/requests/create_external_payment_request.json
+  - input: jsonschema/customer-facing/treasury/ledger/base/external_resource.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/external_resource_type.json
+  - input: jsonschema/customer-facing/treasury/ledger/requests/external_payment_action_with_progress_to_request.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/external_payment_response.json
+  - input: jsonschema/customer-facing/treasury/ledger/responses/external_payments_response.json
+  - input: jsonschema/customer-facing/treasury/ledger/requests/create_management_operation_request.json
+  - input: jsonschema/customer-facing/treasury/ledger/requests/management_operation_action_request.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/management_operation_category.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/management_operation_direction.json
+  - input: jsonschema/customer-facing/treasury/ledger/events/management_operation_event.json
+  - input: jsonschema/customer-facing/treasury/ledger/events/management_operation_event_type.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/management_operation_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/responses/management_operation_transactions_response.json
+  - input: jsonschema/customer-facing/treasury/ledger/base/unified_base_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/financial_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/card_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/payment_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/transactions/book_transfer_transaction.json
+  - input: jsonschema/customer-facing/treasury/ledger/responses/unified_transactions_response.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/transaction_status.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/transaction_direction.json
+  - input: jsonschema/customer-facing/treasury/ledger/enums/transaction_category.json
+  - input: jsonschema/customer-facing/treasury/ledger/base/unified_transaction.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-credit-config-request.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-credit-config-response.json
+  - input: jsonschema/customer-facing/account/2024-01-15/patch-financial-account-request.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-state.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-response.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-accounts-response.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-credit-config.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-substatus.json
+  - input: jsonschema/customer-facing/account/2024-01-15/financial-account-status.json
+  - input: jsonschema/customer-facing/account/2024-01-15/update-financial-account-status-request.json
+  - input: jsonschema/customer-facing/account/2024-01-15/internal-update-financial-account-status-request.json
+  - input: jsonschema/internal/treasury/ledger/create_management_operation_request.json
+  - input: jsonschema/internal/treasury/ledger/management_operation_relationship.json

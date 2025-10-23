@@ -270,6 +270,10 @@ class JsonSchemaObject(BaseModel):
     if not TYPE_CHECKING:
 
         def __init__(self, **data: Any) -> None:
+            # When const is present, set it as the default value if no explicit default exists
+            if 'const' in data and 'default' not in data:
+                data['default'] = data['const']
+
             super().__init__(**data)
             self.extras = {k: v for k, v in data.items() if k not in EXCLUDE_FIELD_KEYS}
             if 'const' in data.get(self.__extra_key__, {}):
@@ -301,7 +305,7 @@ class JsonSchemaObject(BaseModel):
 
     @cached_property
     def has_default(self) -> bool:
-        return 'default' in self.__fields_set__ or 'default_factory' in self.extras
+        return 'default' in self.__fields_set__ or 'default_factory' in self.extras or 'const' in self.extras
 
     @cached_property
     def has_constraint(self) -> bool:
@@ -772,9 +776,10 @@ class JsonSchemaParser(Parser):
                 return self.data_type(reference=base_classes[0])
         if required:
             for field in fields:
+                # Const fields should not be marked as required since they have a fixed default value
                 if self.force_optional_for_required_fields or (  # pragma: no cover
                     self.apply_default_values_for_required_fields and field.has_default
-                ):
+                ) or ('const' in field.extras):
                     continue  # pragma: no cover
                 if (field.original_name or field.name) in required:
                     field.required = True
@@ -783,10 +788,11 @@ class JsonSchemaParser(Parser):
             for required_ in obj.required:
                 if required_ in field_name_to_field:
                     field = field_name_to_field[required_]
+                    # Const fields should not be marked as required since they have a fixed default value
                     if self.force_optional_for_required_fields or (
                         self.apply_default_values_for_required_fields
                         and field.has_default
-                    ):
+                    ) or ('const' in field.extras):
                         continue
                     field.required = True
                 else:
@@ -972,9 +978,10 @@ class JsonSchemaParser(Parser):
 
             field_type = self.parse_item(modular_name, field, [*path, field_name])
 
+            # Const fields should not be marked as required since they have a fixed default value
             if self.force_optional_for_required_fields or (
                 self.apply_default_values_for_required_fields and field.has_default
-            ):
+            ) or ('const' in field.extras):
                 required: bool = False
             else:
                 required = original_field_name in requires

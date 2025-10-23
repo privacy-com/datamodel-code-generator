@@ -1,0 +1,17 @@
+{
+  "components": {
+    "schemas": {
+      "BookTransferTransaction": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "type": "string",
+            "const": "TRANSFER",
+            "description": "TRANSFER - Book Transfer Transaction"
+          }
+        },
+        "required": ["family"]
+      }
+    }
+  }
+}

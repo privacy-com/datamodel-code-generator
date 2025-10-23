@@ -1,9 +1,0 @@
-{
-  "type": "object",
-  "properties": {
-    "test_ref": {
-      "$ref": "test-schema.json"
-    }
-  },
-  "title": "MainModel"
-}
